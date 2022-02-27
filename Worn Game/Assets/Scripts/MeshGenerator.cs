@@ -23,19 +23,20 @@ public class MeshGenerator : MonoBehaviour
     Vector3 ab;
     Vector3 bc;
     Vector3 average;
-    Vector3[] oldc;
+    Vector3 newC0;
     int[] triangles;
     float direction = 0.0f;
     float wave,x,z,waveC,ForwardC;
     float time = 0.0f;
     float intervals = 0.0f;
+
+    String result="";
     
 
     // Start is called before the first frame update
     void Start()
     {
         center = new Vector3[Length];
-        oldc = new Vector3[Length];
         //Radius=Radius/10;
         
         mesh = new Mesh();
@@ -57,10 +58,6 @@ public class MeshGenerator : MonoBehaviour
             direction-=(turnSpeed/10);
         }
         if(direction>=360||direction<=-360){direction=0;}
-        //Debug.Log("direction: "+direction.ToString()+"Sine Direction: "+(float)Math.Sin(Math.PI*(direction)));
-        Debug.Log("x: "+(90).ToString()+"Sine x: "+(float)Math.Sin(Math.PI*(90/180)));
-        // Debug.Log("wave"+waveC.ToString());
-        // Debug.Log("forward"+ForwardC.ToString());
         waveC = (float)Math.Sin(Math.PI*(direction)/180);
         ForwardC = (float)Math.Cos(Math.PI*(direction)/180);
     }
@@ -77,40 +74,48 @@ public class MeshGenerator : MonoBehaviour
         e2 = new Vector3[Length];
 
         points = new Vector3[Length*10];
-        //Debug.Log("time: " + time);
 
         wave = (float)Math.Sin(Math.PI*(time)*150/180);
         x=(wave*waveC)+(ForwardC);
         z=(wave*ForwardC)+(waveC);
-        
-        center[0] = new Vector3 (center[0][0]+(x*speed),0,center[0][2]+(z*speed));
-
-        for(int index=1;index<Length;index++)
+        newC0 = new Vector3 (center[0][0]+(x*speed),0,center[0][2]+(z*speed));
+        if(newC0 != center[0])
         {
-            center[index] = oldc[index-1];
-            if(index>0&&index<Length-1)
+            for(int index=Length-1;index>0;index--)
             {
+                center[index] = center[index-1];
+                Debug.Log("Index: "+index.ToString()+" Value: "+center[index-1].ToString());
+                if(index>0&&index<Length-1)
+                {
 
-                ab = center[index]-center[index-1];
-                bc = center[index+1]-center[index];
-                average = ab+bc;
-                average=new Vector3 (average[0]/2,average[1]/2,average[2]/2);
+                    ab = center[index]-center[index-1];
+                    bc = center[index+1]-center[index];
+                    average = ab+bc;
+                    average=new Vector3 (average[0]/2,average[1]/2,average[2]/2);
+                }
+                else
+                {
+                    average = center[index];
+                }
+
+
+
+                e0[index] = new Vector3 (average[0],average[1],average[2]);
+                e1[index] = new Vector3 ((float)(-1*Math.Cos(Math.PI*index*45/180)),0,1);
+                e2[index] = new Vector3 (e0[index][0],1,e0[index][2]);
+                Instantiate(line, center[index], Quaternion.identity);
+
+                edgePoints(index);
             }
-            else
-            {
-                average = center[index];
-            }
-
-
-
-            e0[index] = new Vector3 (average[0],average[1],average[2]);
-            e1[index] = new Vector3 ((float)(-1*Math.Cos(Math.PI*index*45/180)),0,1);
-            e2[index] = new Vector3 (e0[index][0],1,e0[index][2]);
-            Instantiate(line, center[index], Quaternion.identity);
-            //Debug.Log("points: " + center[index]);
-            edgePoints(index);
         }
-        oldc = center;
+        center[0] = newC0;
+        result="";
+        for (int i = 0; i < 10; i++) {     
+            result+=center[i];
+        }
+        Debug.Log(result);
+        //Debug.Log(points);
+        
     }
     
     void edgePoints(int index)
@@ -203,7 +208,7 @@ public class MeshGenerator : MonoBehaviour
         time+= Time.deltaTime;
         if(time-intervals>0.1)
         {
-            Debug.Log(direction);
+            //Debug.Log(direction);
             //mesh.Clear();
             centerLine(time);
             //mesh.vertices = points;
