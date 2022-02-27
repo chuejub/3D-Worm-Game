@@ -11,7 +11,8 @@ public class MeshGenerator : MonoBehaviour
     public GameObject edge;
     public GameObject line;
     public double Radius;
-    
+    public float speed;
+    public float turnSpeed;
     public int Length;
     Vector3[] vertices;
     Vector3[] center;
@@ -25,7 +26,7 @@ public class MeshGenerator : MonoBehaviour
     Vector3[] oldc;
     int[] triangles;
     float direction = 0.0f;
-    float wave;
+    float wave,x,z,waveC,ForwardC;
     float time = 0.0f;
     float intervals = 0.0f;
     
@@ -45,6 +46,30 @@ public class MeshGenerator : MonoBehaviour
         
     }
 
+    void directionIncrement(float key)
+    {
+        if(key<0)
+        {
+            direction+=(turnSpeed/10);
+        }
+        else if(key>0)
+        {
+            direction-=(turnSpeed/10);
+        }
+        if(direction>=360||direction<=-360){direction=0;}
+        //Debug.Log("direction: "+direction.ToString()+"Sine Direction: "+(float)Math.Sin(Math.PI*(direction)));
+        Debug.Log("x: "+(90).ToString()+"Sine x: "+(float)Math.Sin(Math.PI*(90/180)));
+        // Debug.Log("wave"+waveC.ToString());
+        // Debug.Log("forward"+ForwardC.ToString());
+        waveC = (float)Math.Sin(Math.PI*(direction)/180);
+        ForwardC = (float)Math.Cos(Math.PI*(direction)/180);
+    }
+
+    float keyDetection()
+    {
+        return Input.GetAxis("Horizontal");
+    }
+
     void centerLine(float time)
     {
         e0 = new Vector3[Length];
@@ -52,11 +77,13 @@ public class MeshGenerator : MonoBehaviour
         e2 = new Vector3[Length];
 
         points = new Vector3[Length*10];
-        Debug.Log("time: " + time);
+        //Debug.Log("time: " + time);
 
-        wave = (float)Math.Sin(Math.PI*(time)*45/180);
+        wave = (float)Math.Sin(Math.PI*(time)*150/180);
+        x=(wave*waveC)+(ForwardC);
+        z=(wave*ForwardC)+(waveC);
         
-        center[0] = new Vector3 (wave*(direction)+(time)*(1-direction),0,wave*(1-direction)+(time)*(direction));
+        center[0] = new Vector3 (center[0][0]+(x*speed),0,center[0][2]+(z*speed));
 
         for(int index=1;index<Length;index++)
         {
@@ -172,15 +199,15 @@ public class MeshGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        directionIncrement(keyDetection());
         time+= Time.deltaTime;
-        if(time-intervals>1)
+        if(time-intervals>0.1)
         {
-            if(direction==0){direction=1;}else{direction=0;}
-            Debug.Log(time);
-            mesh.Clear();
+            Debug.Log(direction);
+            //mesh.Clear();
             centerLine(time);
-            mesh.vertices = points;
-            mesh.triangles = triangles;
+            //mesh.vertices = points;
+            //mesh.triangles = triangles;
             intervals=time;
         }
     }

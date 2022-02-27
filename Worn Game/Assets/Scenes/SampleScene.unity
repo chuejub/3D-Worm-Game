@@ -428,6 +428,8 @@ MonoBehaviour:
   edge: {fileID: 1840793366}
   line: {fileID: 844410655}
   Radius: 0.5
+  speed: 1
+  turnSpeed: 1
   Length: 10
 --- !u!33 &1093302120
 MeshFilter:
