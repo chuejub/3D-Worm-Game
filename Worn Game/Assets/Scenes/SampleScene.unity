@@ -425,9 +425,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d55353ae91bc321469b66482fa6ec3d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  edge: {fileID: 1840793370}
-  line: {fileID: 844410659}
-  Radius: 1
+  edge: {fileID: 1840793366}
+  line: {fileID: 844410655}
+  Radius: 0.5
   Length: 10
 --- !u!33 &1093302120
 MeshFilter:
