@@ -10,6 +10,7 @@ public class MeshGenerator : MonoBehaviour
 
     public GameObject edge;
     public GameObject line;
+    public GameObject camera;
     public double Radius;
     public float speed;
     public float turnSpeed;
@@ -57,7 +58,14 @@ public class MeshGenerator : MonoBehaviour
         {
             direction-=(turnSpeed/10);
         }
-        if(direction>=360||direction<=-360){direction=0;}
+        if(direction>=360)
+        {
+            direction-=360;
+        }
+        else if(direction<=-360)
+        {
+            direction+=360;
+        }
         waveC = (float)Math.Sin(Math.PI*(direction)/180);
         ForwardC = (float)Math.Cos(Math.PI*(direction)/180);
     }
@@ -204,7 +212,12 @@ public class MeshGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         directionIncrement(keyDetection());
+        transform.position = center[0];
+        transform.rotation = Quaternion.Euler(0, (-1*direction), 0);
+        
+        
         time+= Time.deltaTime;
         if(time-intervals>0.1)
         {
