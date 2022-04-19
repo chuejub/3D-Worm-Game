@@ -7,11 +7,9 @@ using UnityEngine;
 public class MeshGenerator : MonoBehaviour
 {
     Mesh mesh;
-
     public GameObject edge;
     public GameObject line;
-    public GameObject camera;
-    public double Radius;
+    public float Radius;
     public float speed;
     public float turnSpeed;
     public int Length;
@@ -26,6 +24,12 @@ public class MeshGenerator : MonoBehaviour
     Vector3 average;
     Vector3 newC0;
     int[] triangles;
+    float[,] wormShape;
+    float[,] tan;
+    float[,] e0_cal;
+    float[,] e2_cal;
+    float[] e0_norm;
+    float[] tan_norm;
     float direction = 0.0f;
     float wave,x,z,waveC,ForwardC;
     float time = 0.0f;
@@ -92,7 +96,6 @@ public class MeshGenerator : MonoBehaviour
             for(int index=Length-1;index>0;index--)
             {
                 center[index] = center[index-1];
-                Debug.Log("Index: "+index.ToString()+" Value: "+center[index-1].ToString());
                 if(index>0&&index<Length-1)
                 {
 
@@ -105,39 +108,130 @@ public class MeshGenerator : MonoBehaviour
                 {
                     average = center[index];
                 }
-
-
-
-                e0[index] = new Vector3 (average[0],average[1],average[2]);
-                e1[index] = new Vector3 ((float)(-1*Math.Cos(Math.PI*index*45/180)),0,1);
-                e2[index] = new Vector3 (e0[index][0],1,e0[index][2]);
                 Instantiate(line, center[index], Quaternion.identity);
 
-                edgePoints(index);
             }
         }
         center[0] = newC0;
+
+        //display the center points----------------
         result="";
         for (int i = 0; i < 10; i++) {     
             result+=center[i];
         }
-        Debug.Log(result);
-        //Debug.Log(points);
+        //Debug.Log(result);
+        //-----------------------------------------
+        edgePoints();
         
     }
     
-    void edgePoints(int index)
+    
+    void norm(ref float[] norm,ref float[,] original)
     {
-        for(int angle=0;angle<360;angle+=36)
+        for(int index=0;index<norm.GetLength(0);index++)
         {
-            double x = Radius*(e1[index][0]*Math.Cos(Math.PI*angle/180)+e2[index][0]*Math.Sin(Math.PI*angle/180));
-            double y = Radius*(e1[index][1]*Math.Cos(Math.PI*angle/180)+e2[index][1]*Math.Sin(Math.PI*angle/180));
-            double z = Radius*(e1[index][2]*Math.Cos(Math.PI*angle/180)+e2[index][2]*Math.Sin(Math.PI*angle/180));
-            int pIndex = (angle/36)+(index*Length);
-            points[pIndex] = center[index] + new Vector3 ((float)x,(float)y,(float)z);
-            //Instantiate(edge, points[pIndex], Quaternion.identity);
-            //Debug.Log("points: " + points[pIndex]+" index: " + pIndex);
+            norm[index] = (float)Math.Sqrt(
+                    Math.Pow(original[index,0],2)+
+                    Math.Pow(original[index,1],2)+
+                    Math.Pow(original[index,2],2));
         }
+
+    }
+    void divideAll(ref float[,] dividend,ref float[] divisor)
+    {
+        for(int index=0;index<dividend.GetLength(0);index++)
+        {
+            dividend[index,0] = dividend[index,0]/divisor[index];
+            dividend[index,1] = dividend[index,1]/divisor[index];
+            dividend[index,2] = dividend[index,2]/divisor[index];
+        }
+    }
+    void edgePoints()
+    {
+        tan_norm = new float[Length-1];
+        tan = new float[Length-1,3];
+        e2_cal = new float[Length,3];
+        e0_cal = new float[Length,3];
+        e0_norm = new float[Length];
+        wormShape = new float[Length,3];
+        for(int index=0;index<Length;index++)
+        {
+            for(int axis=0;axis<3;axis++)
+            {
+                //Debug.Log(axis.ToString()+','+index.ToString());
+                wormShape[index,axis] = center[index][axis];
+                
+            }
+            if (index>0)
+            {
+                for(int axis=0;axis<3;axis++)
+                {
+                    tan[index-1,axis] = wormShape[index,axis] - wormShape[index-1,axis];
+                }
+            }
+        }
+        norm(ref tan_norm,ref tan);
+        divideAll(ref tan, ref tan_norm);
+        //find e0
+        for(int index=0;index<Length;index++)
+        {
+            for(int axis=0;axis<3;axis++)
+            {
+                if(index==0)
+                {
+                    e0_cal[index,axis] = tan[index,axis];
+                }
+                else if(index==Length-1)
+                {
+                    e0_cal[index,axis] = tan[Length-2,axis];
+                }
+                else
+                {
+                    e0_cal[index,axis] = (tan[index,axis]+tan[index-1,axis])/2;
+                }
+            }
+        }
+        norm(ref e0_norm, ref e0_cal);
+        divideAll(ref e0_cal, ref e0_norm);
+        //initialise e2
+        for(int index=0;index<Length;index++)
+        {
+            e2_cal[index,0] = 0;
+            e2_cal[index,1] = 1;
+            e2_cal[index,2] = 0;
+        }
+        for(int index=0;index<Length;index++)
+        {
+            for(int axis=0;axis<3;axis++)
+            {
+                e0[index][axis] = e0_cal[index,axis];
+                e2[index][axis] = e2_cal[index,axis];
+            }
+        }
+        //find e1
+        for(int index=0;index<Length;index++)
+        {
+            e1[index] = Vector3.Cross(e2[index],e0[index]);
+        }
+        int theta=0;
+        int circleCount = 0;
+        for(int index=0;index<Length*10;index++)
+        {
+            Debug.Log(index.ToString()+","+circleCount.ToString());
+
+            points[index] = center[circleCount] + (Radius*(((float)Math.Cos(Math.PI*(theta)/180)*e1[circleCount])+((float)Math.Sin(Math.PI*(theta)/180)*e2[circleCount])));
+            theta+=36;
+            if((index+1)%10==0){circleCount++;}
+            if(theta>=360){
+                theta=0;
+            }
+        }
+
+        for(int index=0;index<Length*10;index++)
+        {
+            Instantiate(edge, points[index], Quaternion.identity);
+        }
+
     }
 
     void CreateShape()
@@ -208,14 +302,17 @@ public class MeshGenerator : MonoBehaviour
         //     19, 10, 0
         // };
     }
-
+    void CameraUpdate()
+    {
+        transform.position = center[0];
+        transform.rotation = Quaternion.Euler(0, (-1*direction), 0);
+    }
     // Update is called once per frame
     void Update()
     {
         
         directionIncrement(keyDetection());
-        transform.position = center[0];
-        transform.rotation = Quaternion.Euler(0, (-1*direction), 0);
+        CameraUpdate();
         
         
         time+= Time.deltaTime;
