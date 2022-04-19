@@ -42,7 +42,6 @@ public class MeshGenerator : MonoBehaviour
     void Start()
     {
         center = new Vector3[Length];
-        //Radius=Radius/10;
         
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
@@ -108,20 +107,16 @@ public class MeshGenerator : MonoBehaviour
                 {
                     average = center[index];
                 }
-                Instantiate(line, center[index], Quaternion.identity);
+                
 
             }
         }
         center[0] = newC0;
 
-        //display the center points----------------
-        result="";
-        for (int i = 0; i < 10; i++) {     
-            result+=center[i];
+        if(center[Length-1]!=new Vector3 (0,0,0))
+        {
+            edgePoints();
         }
-        //Debug.Log(result);
-        //-----------------------------------------
-        edgePoints();
         
     }
     
@@ -217,8 +212,6 @@ public class MeshGenerator : MonoBehaviour
         int circleCount = 0;
         for(int index=0;index<Length*10;index++)
         {
-            Debug.Log(index.ToString()+","+circleCount.ToString());
-
             points[index] = center[circleCount] + (Radius*(((float)Math.Cos(Math.PI*(theta)/180)*e1[circleCount])+((float)Math.Sin(Math.PI*(theta)/180)*e2[circleCount])));
             theta+=36;
             if((index+1)%10==0){circleCount++;}
@@ -227,84 +220,41 @@ public class MeshGenerator : MonoBehaviour
             }
         }
 
-        for(int index=0;index<Length*10;index++)
-        {
-            Instantiate(edge, points[index], Quaternion.identity);
-        }
-
     }
-
     void CreateShape()
     {
         triangles = new int[(Length-1)*60];
-        for(int tIndex=0;tIndex<2-1;tIndex++)
+        int a=0;
+
+        for(int outindex=0;outindex<(Length-1)*60;outindex+=60)
         {
-            int count = 0;
             for(int index=0;index<30;index+=3)
             {
-                if(index+3>=30)
-                {
-                    triangles[index+(tIndex*10)]=(tIndex*10);
-                }
-                else
-                {
-                    triangles[index+(tIndex*10)]=count+1+(tIndex*10);
-                }
-                triangles[index+1+(tIndex*10)]=count+(tIndex*10);
-                triangles[index+2+(tIndex*10)]=count+10+(tIndex*10);
-                //str = (triangles[index+(tIndex*10)]).ToString()+","+(triangles[index+1+(tIndex*10)]).ToString()+","+(triangles[index+2+(tIndex*10)]).ToString();
-                //Debug.Log(str);
-                count++;
+                triangles[outindex+index] = a;
+                if(index==27){triangles[outindex+index+1] = a-9;}
+                else{triangles[outindex+index+1] = a+1;}
+                triangles[outindex+index+2] = a+10;
+                a++;
             }
-            count = 0;
             for(int index=30;index<60;index+=3)
             {
-
-                triangles[index+(tIndex*10)]=count+10+(tIndex*10);
-
-                if(index+3>=60)
-                {
-                    triangles[index+1+(tIndex*10)]=10+(tIndex*10);
-                    triangles[index+2+(tIndex*10)]=(tIndex*10);
-                }
-                else
-                {
-                    triangles[index+1+(tIndex*10)]=count+11+(tIndex*10);
-                    triangles[index+2+(tIndex*10)]=count+1+(tIndex*10);
-                }
-                //str = (triangles[index+(tIndex*10)]).ToString()+","+(triangles[index+1+(tIndex*10)]).ToString()+","+(triangles[index+2+(tIndex*10)]).ToString();
-                //Debug.Log(str);
-                count++;
+                if(index==57){triangles[outindex+index] = a-9;Debug.Log(a-9);}
+                else{triangles[outindex+index] = a+1;}
+                triangles[outindex+index+1] = a;
+                if(index==57){triangles[outindex+index+2] = a-19;}
+                else{triangles[outindex+index+2] = a-9;}
+                a++;
             }
+            a-=10;
         }
-        
-        // {
-        //     1, 0, 10,
-        //     2, 1, 11,
-        //     3, 2, 12,
-        //     4, 3, 13,
-        //     5, 4, 14,
-        //     6, 5, 15,
-        //     7, 6, 16,
-        //     8, 7, 17,
-        //     9, 8, 18,
-        //     0, 9, 19,
-
-        //     10, 11, 1,
-        //     11, 12, 2,
-        //     12, 13, 3,
-        //     13, 14, 4,
-        //     14, 15, 5,
-        //     15, 16, 6,
-        //     16, 17, 7,
-        //     17, 18, 8,
-        //     18, 19, 9,
-        //     19, 10, 0
-        // };
+        for(int index=0;index<(2-1)*60;index+=3)
+            Debug.Log(triangles[index].ToString()+","+triangles[index+1].ToString()+","+triangles[index+2].ToString());
     }
+
     void CameraUpdate()
     {
         transform.position = center[0];
+        //Debug.Log();
         transform.rotation = Quaternion.Euler(0, (-1*direction), 0);
     }
     // Update is called once per frame
@@ -318,11 +268,18 @@ public class MeshGenerator : MonoBehaviour
         time+= Time.deltaTime;
         if(time-intervals>0.1)
         {
-            //Debug.Log(direction);
-            //mesh.Clear();
+            mesh.Clear();
             centerLine(time);
-            //mesh.vertices = points;
-            //mesh.triangles = triangles;
+            if(center[Length-1]!=new Vector3 (0,0,0))
+            {
+                Instantiate(line, center[0], Quaternion.identity);
+                for(int index=0;index<10; index++)
+                {
+                    Instantiate(edge, points[index], Quaternion.identity);
+                }
+            }
+            mesh.vertices = points;
+            mesh.triangles = triangles;
             intervals=time;
         }
     }

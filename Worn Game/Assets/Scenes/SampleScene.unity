@@ -388,7 +388,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.18301274, y: 0.6830127, z: -0.18301274, w: 0.6830127}
-  m_LocalPosition: {x: -30, y: 9, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1093302121}
@@ -430,7 +430,7 @@ MonoBehaviour:
   Radius: 2
   speed: 1
   turnSpeed: 1
-  Length: 10
+  Length: 20
 --- !u!33 &1093302120
 MeshFilter:
   m_ObjectHideFlags: 0
