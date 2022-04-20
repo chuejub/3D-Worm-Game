@@ -9,6 +9,7 @@ public class Spawn : MonoBehaviour
     public GameObject enemy;
     public GameObject reward;
     GameObject newObject;
+    SphereCollider collider;
     int x, z, total;
     float[,] allPosition;
     Vector3[] v3Position;
@@ -34,7 +35,7 @@ public class Spawn : MonoBehaviour
                 }
             }unique = 0;
             allPosition[count,0]=x;
-            allPosition[count,1]=-0.2f;
+            allPosition[count,1]=-0.06f;
             allPosition[count,2]=z;
         }
         for(int count=numberOfEnemy;count<total;count++)
@@ -50,7 +51,7 @@ public class Spawn : MonoBehaviour
                 }
             }unique = 0;
             allPosition[count,0]=x;
-            allPosition[count,1]=0.2f;
+            allPosition[count,1]=0.16f;
             allPosition[count,2]=z;
         }
 
@@ -60,7 +61,9 @@ public class Spawn : MonoBehaviour
             v3Position[count][1]=allPosition[count,1]*10;
             v3Position[count][2]=allPosition[count,2]*10;
             newObject = Instantiate(enemy, v3Position[count], Quaternion.Euler(0,Random.Range(0, 360),0));
-            newObject.transform.localScale = new Vector3(4, 4, 4);
+            newObject.transform.localScale = new Vector3(2, 2, 2);
+            collider = newObject.AddComponent(typeof(SphereCollider)) as SphereCollider;
+            collider.radius = 3f;
         }
         for(int count=numberOfEnemy;count<total;count++)
         {
@@ -68,7 +71,8 @@ public class Spawn : MonoBehaviour
             v3Position[count][1]=allPosition[count,1]*10;
             v3Position[count][2]=allPosition[count,2]*10;
             newObject = Instantiate(reward, v3Position[count], Quaternion.Euler(0,Random.Range(0, 360),0));
-            newObject.transform.localScale = new Vector3(4, 4, 4);
+            newObject.transform.localScale = new Vector3(2, 2, 2);
+            collider = newObject.AddComponent(typeof(SphereCollider)) as SphereCollider;
         }
     }
 

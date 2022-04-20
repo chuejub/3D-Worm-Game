@@ -256,12 +256,12 @@ public class MeshGenerator : MonoBehaviour
     void CameraUpdate()
     {
         offset = new Vector3(-offsetDistance*(float)Math.Cos(Math.PI*(direction)/180)
-                            ,10
+                            ,3
                             ,-offsetDistance*(float)Math.Sin(Math.PI*(direction)/180));
         head.transform.position = center[0];
         cam.transform.position = center[0]+offset;
         //Debug.Log();
-        cam.transform.rotation = Quaternion.Euler(20, (-1*direction)+90, 0);
+        cam.transform.rotation = Quaternion.Euler(10, (-1*direction)+90, 0);
     }
     // Update is called once per frame
     void Update()
@@ -287,6 +287,7 @@ public class MeshGenerator : MonoBehaviour
                 mesh.Clear();
                 mesh.vertices = points;
                 mesh.triangles = triangles;
+                mesh.RecalculateNormals();
                 
             }
             intervals=time;
