@@ -40,8 +40,6 @@ public class MeshGenerator : MonoBehaviour
     float wave,x,z,waveC,ForwardC;
     float time = 0.0f;
     float intervals = 0.0f;
-
-    String result="";
     
 
     // Start is called before the first frame update
@@ -244,7 +242,7 @@ public class MeshGenerator : MonoBehaviour
             }
             for(int index=30;index<60;index+=3)
             {
-                if(index==57){triangles[outindex+index] = a-9;Debug.Log(a-9);}
+                if(index==57){triangles[outindex+index] = a-9;}
                 else{triangles[outindex+index] = a+1;}
                 triangles[outindex+index+1] = a;
                 if(index==57){triangles[outindex+index+2] = a-19;}
@@ -253,8 +251,6 @@ public class MeshGenerator : MonoBehaviour
             }
             a-=10;
         }
-        for(int index=0;index<(2-1)*60;index+=3)
-            Debug.Log(triangles[index].ToString()+","+triangles[index+1].ToString()+","+triangles[index+2].ToString());
     }
 
     void CameraUpdate()
