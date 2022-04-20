@@ -9,10 +9,15 @@ public class MeshGenerator : MonoBehaviour
     Mesh mesh;
     public GameObject edge;
     public GameObject line;
+    public GameObject cam;
+    public GameObject head;
+    public GameObject tail;
     public float Radius;
     public float speed;
     public float turnSpeed;
     public int Length;
+    public float offsetDistance;
+    Vector2[] texture;
     Vector3[] vertices;
     Vector3[] center;
     Vector3[] points;
@@ -23,6 +28,7 @@ public class MeshGenerator : MonoBehaviour
     Vector3 bc;
     Vector3 average;
     Vector3 newC0;
+    Vector3 offset;
     int[] triangles;
     float[,] wormShape;
     float[,] tan;
@@ -253,9 +259,13 @@ public class MeshGenerator : MonoBehaviour
 
     void CameraUpdate()
     {
-        transform.position = center[0];
+        offset = new Vector3(-offsetDistance*(float)Math.Cos(Math.PI*(direction)/180)
+                            ,10
+                            ,-offsetDistance*(float)Math.Sin(Math.PI*(direction)/180));
+        head.transform.position = center[0];
+        cam.transform.position = center[0]+offset;
         //Debug.Log();
-        transform.rotation = Quaternion.Euler(0, (-1*direction), 0);
+        cam.transform.rotation = Quaternion.Euler(20, (-1*direction)+90, 0);
     }
     // Update is called once per frame
     void Update()
@@ -268,19 +278,23 @@ public class MeshGenerator : MonoBehaviour
         time+= Time.deltaTime;
         if(time-intervals>0.1)
         {
-            mesh.Clear();
+            
             centerLine(time);
             if(center[Length-1]!=new Vector3 (0,0,0))
             {
-                Instantiate(line, center[0], Quaternion.identity);
-                for(int index=0;index<10; index++)
-                {
-                    Instantiate(edge, points[index], Quaternion.identity);
-                }
+                tail.transform.position = center[Length-1];
+                // Instantiate(line, center[0], Quaternion.identity);
+                // for(int index=0;index<10; index++)
+                // {
+                //     Instantiate(edge, points[index], Quaternion.identity);
+                // }
+                mesh.Clear();
+                mesh.vertices = points;
+                mesh.triangles = triangles;
+                
             }
-            mesh.vertices = points;
-            mesh.triangles = triangles;
             intervals=time;
+            
         }
     }
 }
