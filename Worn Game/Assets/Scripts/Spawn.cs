@@ -8,6 +8,7 @@ public class Spawn : MonoBehaviour
     public int numberOfReward;
     public GameObject enemy;
     public GameObject reward;
+    GameObject newObject;
     int x, z, total;
     float[,] allPosition;
     Vector3[] v3Position;
@@ -49,7 +50,7 @@ public class Spawn : MonoBehaviour
                 }
             }unique = 0;
             allPosition[count,0]=x;
-            allPosition[count,1]=-0.1f;
+            allPosition[count,1]=0.2f;
             allPosition[count,2]=z;
         }
 
@@ -58,18 +59,16 @@ public class Spawn : MonoBehaviour
             v3Position[count][0]=allPosition[count,0]*10;
             v3Position[count][1]=allPosition[count,1]*10;
             v3Position[count][2]=allPosition[count,2]*10;
-            Instantiate(enemy, v3Position[count], Quaternion.identity);
+            newObject = Instantiate(enemy, v3Position[count], Quaternion.Euler(0,Random.Range(0, 360),0));
+            newObject.transform.localScale = new Vector3(4, 4, 4);
         }
         for(int count=numberOfEnemy;count<total;count++)
         {
             v3Position[count][0]=allPosition[count,0]*10;
             v3Position[count][1]=allPosition[count,1]*10;
             v3Position[count][2]=allPosition[count,2]*10;
-            Instantiate(reward, v3Position[count], Quaternion.identity);
-        }
-        for(int count=0;count<total;count++)
-        {
-            Debug.Log(v3Position[count][0].ToString()+','+v3Position[count][2].ToString());
+            newObject = Instantiate(reward, v3Position[count], Quaternion.Euler(0,Random.Range(0, 360),0));
+            newObject.transform.localScale = new Vector3(4, 4, 4);
         }
     }
 

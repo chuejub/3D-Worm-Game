@@ -929,8 +929,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a23bcb83cd9d7d845b27af7efdfcb74f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfEnemy: 2
-  numberOfReward: 2
+  numberOfEnemy: 10
+  numberOfReward: 10
   enemy: {fileID: 100100, guid: f5a9bd478ca094495a4520e37f57420d, type: 3}
   reward: {fileID: 1998942852648348, guid: 7cd627a1919ab7748980fbcec674e6a0, type: 3}
 --- !u!4 &1440455502
