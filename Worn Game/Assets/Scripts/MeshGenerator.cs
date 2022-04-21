@@ -45,10 +45,11 @@ public class MeshGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        center = new Vector3[Length];
-        
+        center = new Vector3[Length];   
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        head.SetActive(false);
+        tail.SetActive(false);
         centerLine(time);
         CreateShape();
 
@@ -278,12 +279,9 @@ public class MeshGenerator : MonoBehaviour
             centerLine(time);
             if(center[Length-1]!=new Vector3 (0,0,0))
             {
+                head.SetActive(true);
+                tail.SetActive(true);
                 tail.transform.position = center[Length-1];
-                // Instantiate(line, center[0], Quaternion.identity);
-                // for(int index=0;index<10; index++)
-                // {
-                //     Instantiate(edge, points[index], Quaternion.identity);
-                // }
                 mesh.Clear();
                 mesh.vertices = points;
                 mesh.triangles = triangles;

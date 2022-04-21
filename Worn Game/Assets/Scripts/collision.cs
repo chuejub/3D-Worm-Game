@@ -36,5 +36,9 @@ public class collision : MonoBehaviour
             counterText.text = "Score: "+score.ToString();
             scoreText.text = "You scored: "+score.ToString();
         }
+        if (collision.gameObject.name == "wall")
+        {
+            Debug.Log("Hit a wall");
+        }
     }
 }

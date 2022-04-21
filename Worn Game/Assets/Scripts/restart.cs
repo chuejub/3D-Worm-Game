@@ -21,6 +21,7 @@ public class restart : MonoBehaviour
 
     public void resetScene()
     {
+        Debug.Log("load scene");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
